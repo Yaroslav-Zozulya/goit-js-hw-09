@@ -10,6 +10,7 @@ refs.stop.addEventListener('click', stopBackgroundColorChanger);
 
 function backgroundColorChanger() {
   refs.start.setAttribute('disabled', '');
+  refs.stop.removeAttribute('disabled');
   intervalId = setInterval(() => {
     document.body.style.backgroundColor = getRandomHexColor();
   }, 1000);
@@ -17,6 +18,7 @@ function backgroundColorChanger() {
 
 function stopBackgroundColorChanger() {
   refs.start.removeAttribute('disabled');
+  refs.stop.setAttribute('disabled', '');
   clearInterval(intervalId);
 }
 
