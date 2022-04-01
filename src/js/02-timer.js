@@ -1,3 +1,4 @@
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'animate.css';
@@ -18,7 +19,14 @@ let timeLeft;
 let timerStatus = false;
 let timerTitle;
 
-const options = {
+const notifyOptions = {
+  cssAnimationStyle: 'from-top',
+  clickToClose: true,
+  timeout: 5000,
+  showOnlyTheLastOne: true,
+};
+
+const flatpickrOptions = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
@@ -28,13 +36,13 @@ const options = {
   },
 };
 
-flatpickr('#datetime-picker', options);
+flatpickr('#datetime-picker', flatpickrOptions);
 
 function timeLeftCalc([finalTime]) {
   // Cacl how much time left for timer
   timeLeft = finalTime - Date.now();
   if (timeLeft <= 0) {
-    alert('Машину времени ещё не изобрели!');
+    Notify.failure('Машину времени ещё не предумали! Выбери будущую дату!', notifyOptions);
     return;
   }
   refs.startBtn.removeAttribute('disabled');
