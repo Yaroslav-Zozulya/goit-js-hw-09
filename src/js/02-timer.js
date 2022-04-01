@@ -16,6 +16,7 @@ refs.startBtn.addEventListener('click', updateInterface);
 
 let timeLeft;
 let timerStatus = false;
+let timerTitle;
 
 const options = {
   enableTime: true,
@@ -45,7 +46,7 @@ function updateInterface() {
     return;
   }
   addTitleForTimer();
-
+  refs.datePicker.setAttribute('disabled', '');
   const timerId = setInterval(() => {
     const { days, hours, minutes, seconds } = convertMs(timeLeft);
 
@@ -57,6 +58,10 @@ function updateInterface() {
     timeLeft -= 1000;
     if (timeLeft <= 0) {
       clearInterval(timerId);
+      timerStatus = false;
+      refs.startBtn.setAttribute('disabled', '');
+      refs.datePicker.removeAttribute('disabled');
+      timerTitle.textContent = '☣ Putin dead ☣';
     }
   }, 1000);
 
@@ -64,12 +69,16 @@ function updateInterface() {
 }
 
 function addTitleForTimer() {
+  if (timerTitle) {
+    timerTitle.textContent = '☣ No? Try again ☣';
+    return;
+  }
   refs.timer.insertAdjacentHTML(
     'beforebegin',
     `<p class="timer-title animate__animated animate__pulse">☣ Putin must die ☣</p>`,
   );
 
-  const timerTitle = document.querySelector('.timer-title');
+  timerTitle = document.querySelector('.timer-title');
   timerTitle.style.setProperty('--animate-duration', '1s');
   timerTitle.style.setProperty('animation-iteration-count', 'infinite');
 }
