@@ -12,6 +12,8 @@ const refs = {
   startBtn: document.querySelector('button[data-start]'),
 };
 
+refs.startBtn.addEventListener('click', updateInterface);
+
 let timeLeft;
 let timerStatus = false;
 
@@ -21,15 +23,13 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    TimeLeftCalc(selectedDates);
+    timeLeftCalc(selectedDates);
   },
 };
 
 flatpickr('#datetime-picker', options);
 
-refs.startBtn.addEventListener('click', updateInterface);
-
-function TimeLeftCalc([finalTime]) {
+function timeLeftCalc([finalTime]) {
   // Cacl how much time left for timer
   timeLeft = finalTime - Date.now();
   if (timeLeft <= 0) {
@@ -46,7 +46,7 @@ function updateInterface() {
   }
   addTitleForTimer();
 
-  setInterval(() => {
+  const timerId = setInterval(() => {
     const { days, hours, minutes, seconds } = convertMs(timeLeft);
 
     refs.days.textContent = days;
@@ -55,6 +55,9 @@ function updateInterface() {
     refs.secs.textContent = seconds;
 
     timeLeft -= 1000;
+    if (timeLeft <= 0) {
+      clearInterval(timerId);
+    }
   }, 1000);
 
   timerStatus = true;
