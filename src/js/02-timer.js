@@ -1,5 +1,6 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import 'animate.css';
 
 const refs = {
   datePicker: document.querySelector('#datetime-picker'),
@@ -12,6 +13,7 @@ const refs = {
 };
 
 let timeLeft;
+let timerStatus = false;
 
 const options = {
   enableTime: true,
@@ -19,7 +21,7 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    finalTimeCalc(selectedDates);
+    TimeLeftCalc(selectedDates);
   },
 };
 
@@ -27,19 +29,22 @@ flatpickr('#datetime-picker', options);
 
 refs.startBtn.addEventListener('click', updateInterface);
 
-function finalTimeCalc([finalTime]) {
+function TimeLeftCalc([finalTime]) {
   // Cacl how much time left for timer
   timeLeft = finalTime - Date.now();
-
   if (timeLeft <= 0) {
-    alert('Please choose a date in the future');
+    alert('Машину времени ещё не изобрели!');
     return;
   }
+  refs.startBtn.removeAttribute('disabled');
 }
 
 function updateInterface() {
   // Update  timer interface
-  refs.timer.insertAdjacentHTML('beforebegin', `<p class="timer-title">Putin must die :)</p>`);
+  if (timerStatus) {
+    return;
+  }
+  addTitleForTimer();
 
   setInterval(() => {
     const { days, hours, minutes, seconds } = convertMs(timeLeft);
@@ -51,6 +56,19 @@ function updateInterface() {
 
     timeLeft -= 1000;
   }, 1000);
+
+  timerStatus = true;
+}
+
+function addTitleForTimer() {
+  refs.timer.insertAdjacentHTML(
+    'beforebegin',
+    `<p class="timer-title animate__animated animate__pulse">☣ Putin must die ☣</p>`,
+  );
+
+  const timerTitle = document.querySelector('.timer-title');
+  timerTitle.style.setProperty('--animate-duration', '1s');
+  timerTitle.style.setProperty('animation-iteration-count', 'infinite');
 }
 
 function convertMs(ms) {
