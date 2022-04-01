@@ -3,13 +3,15 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const refs = {
   datePicker: document.querySelector('#datetime-picker'),
+  timer: document.querySelector('.timer'),
   days: document.querySelector('span[data-days]'),
   hours: document.querySelector('span[data-hours]'),
   mins: document.querySelector('span[data-minutes]'),
   secs: document.querySelector('span[data-seconds]'),
   startBtn: document.querySelector('button[data-start]'),
 };
-let timerTime;
+
+let timeLeft;
 
 const options = {
   enableTime: true,
@@ -17,36 +19,39 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    const presentTime = Date.now();
-    const newTime = selectedDates[0];
-    timerTime = newTime - presentTime;
-
-    if (timerTime <= 0) {
-      alert('Please choose a date in the future');
-      return;
-    }
-    const { days, hours, minutes, seconds } = convertMs(timerTime);
-
-    refs.days.textContent = days;
-    refs.hours.textContent = hours;
-    refs.mins.textContent = minutes;
-    refs.secs.textContent = seconds;
+    finalTimeCalc(selectedDates);
   },
 };
 
 flatpickr('#datetime-picker', options);
 
-refs.startBtn.addEventListener('click', () => {
+refs.startBtn.addEventListener('click', updateInterface);
+
+function finalTimeCalc([finalTime]) {
+  // Cacl how much time left for timer
+  timeLeft = finalTime - Date.now();
+
+  if (timeLeft <= 0) {
+    alert('Please choose a date in the future');
+    return;
+  }
+}
+
+function updateInterface() {
+  // Update  timer interface
+  refs.timer.insertAdjacentHTML('beforebegin', `<p class="timer-title">Putin must die :)</p>`);
+
   setInterval(() => {
-    timerTime -= 1000;
-    const { days, hours, minutes, seconds } = convertMs(timerTime);
+    const { days, hours, minutes, seconds } = convertMs(timeLeft);
 
     refs.days.textContent = days;
     refs.hours.textContent = hours;
     refs.mins.textContent = minutes;
     refs.secs.textContent = seconds;
+
+    timeLeft -= 1000;
   }, 1000);
-});
+}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -68,5 +73,6 @@ function convertMs(ms) {
 }
 
 function addLeadingZero(value) {
+  // Adds 0 if the string is less than two characters
   return String(value).padStart(2, '0');
 }
